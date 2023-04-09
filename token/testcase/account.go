@@ -25,9 +25,9 @@ type AccountGroup struct {
 	Starcoin    AccountCase
 }
 
-var M1 = ""
-var M2 = ""
-var Mterra = ""
+var M1 = "助记词"
+var M2 = "助记词"
+var Mterra = "助记词"
 
 var Accounts1 = AccountGroup{
 	BtcMainnet:  AccountCase{M1, "", "", "", ""},
@@ -42,12 +42,12 @@ var Accounts1 = AccountGroup{
 	Polka44:     AccountCase{M1, "", "", "", ""},
 	Solana:      AccountCase{M1, "", "", "", ""},
 	Aptos:       AccountCase{M1, "", "", "", ""},
-	Sui:         AccountCase{M1, "", "", "", ""},
+	Sui:         AccountCase{M1, "地址", "公钥", "私钥", "keystore"},
 	Starcoin:    AccountCase{M1, "", "", "", ""},
 }
 
 var Accounts2 = AccountGroup{
-	Sui: AccountCase{M2, "", "", "", ""},
+	Sui: AccountCase{M2, "地址", "公钥", "私钥", "keystore"},
 }
 
 var EmptyMnemonic = AccountCase{Mnemonic: ""}
