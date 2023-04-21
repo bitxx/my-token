@@ -2,7 +2,7 @@ package base
 
 import (
 	"encoding/json"
-	"mytoken/core/utils/httpUtil"
+	"mytoken/core/utils/httputil"
 	"net/http"
 	"strings"
 )
@@ -71,7 +71,7 @@ type NFTFetcher interface {
 func ExtractNFTImageUrl(url string) (u *OptionalString, err error) {
 	url = strings.Replace(url, "ipfs://", "https://ipfs.io/ipfs/", 1)
 	u = &OptionalString{Value: url}
-	resp, err := httpUtil.Request(http.MethodHead, url, nil, nil) // HEAD request
+	resp, err := httputil.Request(http.MethodHead, url, nil, nil) // HEAD request
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func ExtractNFTImageUrl(url string) (u *OptionalString, err error) {
 	}
 
 	// It should be return the original url if have anything error
-	resp, err = httpUtil.Request(http.MethodGet, url, nil, nil) // GET request
+	resp, err = httputil.Request(http.MethodGet, url, nil, nil) // GET request
 	if resp.Code != 200 {
 		return u, nil
 	}
