@@ -17,8 +17,8 @@ var cachedStakePoolsMap sync.Map
 type Stake struct {
 	StakeId      string          `json:"stakeId"`
 	Principal    decimal.Decimal `json:"principal"`
-	RequestEpoch int64           `json:"requestEpoch"`
-	ActiveEpoch  int64           `json:"activeEpoch"`
+	RequestEpoch decimal.Decimal `json:"requestEpoch"`
+	ActiveEpoch  decimal.Decimal `json:"activeEpoch"`
 	Status       string          `json:"status"`
 	EarnedAmount decimal.Decimal `json:"earnedAmount"`
 }
@@ -93,8 +93,8 @@ func (sp *StakePool) GetStakePools(owner string, useCache bool) (stakePools []St
 			stake := Stake{
 				StakeId:      s.StakedSuiID,
 				Principal:    s.Principal,
-				RequestEpoch: s.StakeRequestEpoch.IntPart(),
-				ActiveEpoch:  s.StakeActiveEpoch.IntPart(),
+				RequestEpoch: s.StakeRequestEpoch,
+				ActiveEpoch:  s.StakeActiveEpoch,
 				Status:       s.Status,
 				EarnedAmount: s.EstimatedReward,
 			}
@@ -115,12 +115,12 @@ func (sp *StakePool) GetStakePools(owner string, useCache bool) (stakePools []St
 }
 
 // EarningAmountTimeAfterTimestampMs 某个stake产生收益的时间
-func (sp *StakePool) EarningAmountTimeAfterTimestampMs(timestamp int64, stake Stake, validatorStateInfo ValidatorState) int64 {
-	rewardEpoch := stake.RequestEpoch + 2
-	leftEpoch := rewardEpoch - validatorStateInfo.Epoch
+func (sp *StakePool) EarningAmountTimeAfterTimestampMs(timestamp int64, stake Stake, validatorStateInfo ValidatorState) decimal.Decimal {
+	rewardEpoch := stake.RequestEpoch.Add(decimal.NewFromInt(2))
+	leftEpoch := rewardEpoch.Sub(validatorStateInfo.Epoch)
 
-	ranTime := timestamp - validatorStateInfo.EpochStartTimestampMs
-	leftTime := validatorStateInfo.EpochDurationMs*leftEpoch - ranTime
+	ranTime := decimal.NewFromInt(timestamp).Sub(validatorStateInfo.EpochStartTimestampMs)
+	leftTime := validatorStateInfo.EpochDurationMs.Mul(leftEpoch).Sub(ranTime)
 	return leftTime
 }
 
@@ -190,7 +190,7 @@ func (sp *StakePool) BuildUnSignAddDelegationTx(owner string, amount decimal.Dec
 	}
 
 	tokenServcie := NewTokenMain(sp.chain)
-	coinIds, gasId, err := tokenServcie.PickCoinIdsAndGasId(owner, coinType, amount, decimal.NewFromInt(config.MaxGasBudget))
+	coinIds, gasId, err := tokenServcie.PickCoinIdsAndGasId(owner, amount, decimal.NewFromInt(config.MaxGasBudget))
 	if err != nil {
 		return
 	}
@@ -199,11 +199,11 @@ func (sp *StakePool) BuildUnSignAddDelegationTx(owner string, amount decimal.Dec
 	if err != nil {
 		return
 	}
-	return cli.RequestAddStake(context.Background(), *signer, coinIds, amount.BigInt().Uint64(), *validator, gasId, config.MaxGasBudget)
+	return cli.RequestAddStake(context.Background(), *signer, coinIds, amount, *validator, gasId, decimal.NewFromInt(config.MaxGasBudget))
 }
 
 // BuildUnSignWithdrawDelegationTx 生成未签名交易-提现交易
-func (sp *StakePool) BuildUnSignWithdrawDelegationTx(owner, stakeId, coinType string) (txn json.RawMessage, err error) {
+func (sp *StakePool) BuildUnSignWithdrawDelegationTx(owner, stakeId string) (txn json.RawMessage, err error) {
 	defer base.CatchPanicAndMapToBasicError(&err)
 
 	ownerByte, err := types.NewAddressFromHex(owner)
@@ -215,7 +215,7 @@ func (sp *StakePool) BuildUnSignWithdrawDelegationTx(owner, stakeId, coinType st
 		return
 	}
 	tokenServcie := NewTokenMain(sp.chain)
-	gasId, err := tokenServcie.PickMaxCoinId(owner, coinType, decimal.NewFromInt(config.MaxGasBudget))
+	gasId, err := tokenServcie.PickMaxCoinId(owner, decimal.NewFromInt(config.MaxGasBudget))
 	if err != nil {
 		return
 	}
@@ -224,5 +224,5 @@ func (sp *StakePool) BuildUnSignWithdrawDelegationTx(owner, stakeId, coinType st
 	if err != nil {
 		return
 	}
-	return cli.RequestWithdrawStake(context.Background(), *ownerByte, *stakeIdByte, &gasId, config.MaxGasBudget)
+	return cli.RequestWithdrawStake(context.Background(), *ownerByte, *stakeIdByte, &gasId, decimal.NewFromInt(config.MaxGasBudget))
 }

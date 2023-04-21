@@ -20,8 +20,8 @@ type DryRunTransaction struct {
 			NonRefundableStorageFee string `json:"nonRefundableStorageFee"`
 		} `json:"gasUsed"`
 		ModifiedAtVersions []struct {
-			ObjectID       types.ObjectId `json:"objectId"`
-			SequenceNumber int            `json:"sequenceNumber"`
+			ObjectID       types.ObjectId  `json:"objectId"`
+			SequenceNumber decimal.Decimal `json:"sequenceNumber"`
 		} `json:"modifiedAtVersions"`
 		TransactionDigest string `json:"transactionDigest"`
 		Mutated           []struct {
@@ -53,11 +53,11 @@ type DryRunTransaction struct {
 		Owner  struct {
 			AddressOwner string `json:"AddressOwner"`
 		} `json:"owner"`
-		ObjectType      string         `json:"objectType"`
-		ObjectID        types.ObjectId `json:"objectId"`
-		Version         int            `json:"version"`
-		PreviousVersion int            `json:"previousVersion"`
-		Digest          string         `json:"digest"`
+		ObjectType      string          `json:"objectType"`
+		ObjectID        types.ObjectId  `json:"objectId"`
+		Version         decimal.Decimal `json:"version"`
+		PreviousVersion decimal.Decimal `json:"previousVersion"`
+		Digest          string          `json:"digest"`
 	} `json:"objectChanges"`
 	BalanceChanges []struct {
 		Owner struct {

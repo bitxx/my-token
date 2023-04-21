@@ -13,9 +13,9 @@ func TestTransferObjectWithSign(t *testing.T) {
 	testObjectId := "0x16213dc30181ef4fd43fb2705f8bb3c1569499687a45f77880c7859544a06629"
 	fromAccount := M1Account(t)
 	toAddress := testcase.Accounts2.Sui.Address
-	transaction := NewObject(DevnetChain())
+	transaction := NewObject(defaultChain)
 	//生成未签名交易
-	unsignTx, err := transaction.BuildUnSignObjectTransferTx(fromAccount.Address, toAddress, testObjectId, types.SuiCoinType, decimal.NewFromInt(config.PerObjectMaxGasForPay))
+	unsignTx, err := transaction.BuildUnSignObjectTransferTx(fromAccount.Address, toAddress, testObjectId, decimal.NewFromInt(config.PerObjectMaxGasForPay))
 	if err != nil {
 		t.Fatal(err)
 	}

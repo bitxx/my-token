@@ -29,8 +29,8 @@ func NewNFT(chain *Chain) *NFT {
 // @param gasBudget
 // @return txn
 // @return err
-func (n *NFT) BuildUnSignNFTTransferTx(sender, receiver, nftId, coinType string, gasBudget decimal.Decimal) (txn json.RawMessage, err error) {
-	return NewObject(n.chain).BuildUnSignObjectTransferTx(sender, receiver, nftId, coinType, gasBudget)
+func (n *NFT) BuildUnSignNFTTransferTx(sender, receiver, nftId string, gasBudget decimal.Decimal) (txn json.RawMessage, err error) {
+	return NewObject(n.chain).BuildUnSignObjectTransferTx(sender, receiver, nftId, gasBudget)
 }
 
 func (n *NFT) BuildUnSignMintNFTTx(creator, name, description, uri, coinType string, gasBudget decimal.Decimal) (txn json.RawMessage, err error) {
@@ -42,7 +42,7 @@ func (n *NFT) BuildUnSignMintNFTTx(creator, name, description, uri, coinType str
 	}
 
 	tokenServcie := NewTokenMain(n.chain)
-	gasId, err := tokenServcie.PickMaxCoinId(creator, coinType, gasBudget)
+	gasId, err := tokenServcie.PickMaxCoinId(creator, gasBudget)
 	if err != nil {
 		return
 	}

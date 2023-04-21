@@ -35,7 +35,7 @@ func (c *Transaction) SignTx(account *Account, unsignTxn json.RawMessage) (signT
 	if err != nil {
 		return nil, nil, err
 	}
-	signTx, err = account.SignSecureWithoutEncode(model.TxBytes, types.DefaultIntent())
+	signTx, err = account.Sign(model.TxBytes, types.DefaultIntent())
 	return signTx, &model.TxBytes, err
 }
 

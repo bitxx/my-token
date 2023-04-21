@@ -38,7 +38,7 @@ func NewToken(chain *Chain, tag string) (*Token, error) {
 	return &Token{chain, *token}, nil
 }
 
-func (t *Token) Chain() base.Chain {
+func (t *Token) Chain() *Chain {
 	return t.chain
 }
 
@@ -53,28 +53,36 @@ func (t *Token) TokenInfo() (info json.RawMessage, err error) {
 	if err != nil {
 		return
 	}
-	info, err = cli.GetCoinMetadata(context.TODO(), t.rType.ShortString())
-	return info, nil
+	return cli.GetCoinMetadata(context.TODO(), t.rType.ShortString())
 }
 
 // BalanceOf 根据地址获取地址余额
 func (t *Token) BalanceOf(address string) (b *base.Balance, err error) {
 	defer base.CatchPanicAndMapToBasicError(&err)
-	coins, err := t.GetCoins(address, t.rType.ShortString())
+	addr, err := types.NewAddressFromHex(address)
 	if err != nil {
 		return
 	}
-	total := decimal.Zero
-	for _, coin := range coins {
-		total = total.Add(coin.Balance)
+	cli, err := t.chain.Client()
+	if err != nil {
+		return
+	}
+	balanceJson, err := cli.GetBalance(context.Background(), *addr, t.rType.ShortString())
+	if err != nil {
+		return nil, err
+	}
+	balance := models.Balance{}
+	err = json.Unmarshal(balanceJson, &balance)
+	if err != nil {
+		return
 	}
 	return &base.Balance{
-		Total:  total,
-		Usable: total,
+		Total:  balance.TotalBalance,
+		Usable: balance.TotalBalance,
 	}, nil
 }
 
-func (t *Token) GetCoins(address string, coinType string) (coins []types.Coin, err error) {
+func (t *Token) GetCoins(address string, limit uint) (coins []types.Coin, err error) {
 	cli, err := t.chain.Client()
 	if err != nil {
 		return
@@ -83,12 +91,12 @@ func (t *Token) GetCoins(address string, coinType string) (coins []types.Coin, e
 	if err != nil {
 		return
 	}
-	coinObjects, err := cli.GetCoins(context.TODO(), *addr, &coinType, nil, 200)
+	pageCoins, err := cli.GetCoins(context.TODO(), *addr, t.rType.ShortString(), nil, limit)
 	if err != nil {
 		return nil, err
 	}
 	page := models.Coin{}
-	err = json.Unmarshal(coinObjects, &page)
+	err = json.Unmarshal(pageCoins, &page)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +122,7 @@ func (t *Token) BuildUnSignTokenTransferTx(account *Account, receiverAddress str
 	if err != nil {
 		return
 	}
-	coinIds, err := t.PickCoinIds(account.Address, t.rType.ShortString(), amount)
+	coinIds, err := t.PickCoinIds(account.Address, amount)
 	if err != nil {
 		return
 	}
@@ -171,7 +179,7 @@ func (t *Token) EstimateTransferFees(account *Account, receiverAddress string, a
 // @param maxGasBudgetForStake
 // @return coinIds
 // @return gasId
-func (t *Token) PickCoinIdsAndGasId(owner, coinType string, amount, gasAmount decimal.Decimal) (coinIds []types.ObjectId, gasId *types.ObjectId, err error) {
+func (t *Token) PickCoinIdsAndGasId(owner string, amount, gasAmount decimal.Decimal) (coinIds []types.ObjectId, gasId *types.ObjectId, err error) {
 	if gasAmount.Cmp(decimal.Zero) <= 0 {
 		return nil, nil, errors.New("gasAmount need >=0 ")
 	}
@@ -179,7 +187,7 @@ func (t *Token) PickCoinIdsAndGasId(owner, coinType string, amount, gasAmount de
 		return nil, nil, errors.New("amount need >=0 ")
 	}
 
-	coins, err := t.GetCoins(owner, coinType)
+	coins, err := t.GetCoins(owner, 0)
 	if err != nil {
 		return
 	}
@@ -192,8 +200,8 @@ func (t *Token) PickCoinIdsAndGasId(owner, coinType string, amount, gasAmount de
 }
 
 // PickCoinIds 根据amount获取所有需要的 id
-func (t *Token) PickCoinIds(owner, coinType string, amount decimal.Decimal) (coinIds []types.ObjectId, err error) {
-	coins, err := t.GetCoins(owner, coinType)
+func (t *Token) PickCoinIds(owner string, amount decimal.Decimal) (coinIds []types.ObjectId, err error) {
+	coins, err := t.GetCoins(owner, 0)
 	if err != nil {
 		return
 	}
@@ -205,8 +213,8 @@ func (t *Token) PickCoinIds(owner, coinType string, amount decimal.Decimal) (coi
 }
 
 // PickMaxCoinId 获取最大的一个coin id
-func (t *Token) PickMaxCoinId(owner, coinType string, amount decimal.Decimal) (gasId types.ObjectId, err error) {
-	coins, err := t.GetCoins(owner, coinType)
+func (t *Token) PickMaxCoinId(owner string, amount decimal.Decimal) (gasId types.ObjectId, err error) {
+	coins, err := t.GetCoins(owner, 0)
 	if err != nil {
 		return
 	}

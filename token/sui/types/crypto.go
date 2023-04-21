@@ -5,10 +5,9 @@ import (
 	"crypto/ed25519"
 	"encoding/json"
 	"errors"
-	"mytoken/core/lib/bcs"
-	"mytoken/token/sui/types/suicrypto"
-
 	"golang.org/x/crypto/blake2b"
+	"mytoken/core/lib/bcs"
+	"mytoken/core/utils/cryptoutil"
 )
 
 type Signer[T any] interface {
@@ -126,7 +125,7 @@ func NewSuiKeyPair(scheme SignatureScheme, seed []byte) SuiKeyPair {
 	switch scheme.Flag() {
 	case 0:
 		return SuiKeyPair{
-			Ed25519: suicrypto.NewEd25519KeyPair(ed25519.NewKeyFromSeed(seed[:])),
+			Ed25519: cryptoutil.NewEd25519KeyPair(ed25519.NewKeyFromSeed(seed[:])),
 		}
 	default:
 		return SuiKeyPair{}
@@ -134,7 +133,7 @@ func NewSuiKeyPair(scheme SignatureScheme, seed []byte) SuiKeyPair {
 }
 
 type SuiKeyPair struct {
-	Ed25519 *suicrypto.Ed25519KeyPair
+	Ed25519 *cryptoutil.Ed25519KeyPair
 	//Secp256k1 *Secp256k1KeyPair
 	//Secp256r1 *Secp256r1KeyPair
 	SignatureScheme
@@ -169,7 +168,7 @@ func (s *SuiKeyPair) Sign(msg []byte) Signature {
 	}
 }
 
-func NewEd25519SuiSignature(keyPair suicrypto.KeyPair, message []byte) *Ed25519SuiSignature {
+func NewEd25519SuiSignature(keyPair cryptoutil.KeyPair, message []byte) *Ed25519SuiSignature {
 	sig := keyPair.Sign(message)
 
 	var signatureBytes [ed25519.PublicKeySize + ed25519.SignatureSize + 1]byte

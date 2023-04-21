@@ -17,7 +17,7 @@ func NewObject(chain *Chain) *Object {
 }
 
 // BuildUnSignObjectTransferTx gasId gas object to be used in this transaction, the gateway will pick one from the signer's possession if not provided
-func (c *Object) BuildUnSignObjectTransferTx(sender, receiver, objectId, coinType string, gasBudget decimal.Decimal) (txn json.RawMessage, err error) {
+func (c *Object) BuildUnSignObjectTransferTx(sender, receiver, objectId string, gasBudget decimal.Decimal) (txn json.RawMessage, err error) {
 	defer base.CatchPanicAndMapToBasicError(&err)
 
 	senderAddress, err := types.NewAddressFromHex(sender)
@@ -36,7 +36,7 @@ func (c *Object) BuildUnSignObjectTransferTx(sender, receiver, objectId, coinTyp
 
 	//获取gasid
 	tokenService := NewTokenMain(c.chain)
-	gasId, err := tokenService.PickMaxCoinId(sender, coinType, gasBudget)
+	gasId, err := tokenService.PickMaxCoinId(sender, gasBudget)
 	if err != nil {
 		return nil, err
 	}

@@ -1,12 +1,10 @@
 package types
 
-import (
-	"os"
-)
-
 var (
-	Address, _ = NewAddressFromHex("0xb08ae4d187ca0057baa1666fe43fb9d7f3693a9a")
-	M1Mnemonic = os.Getenv("WalletSdkTestM1")
+/*
+Address, _ = NewAddressFromHex("0xb08ae4d187ca0057baa1666fe43fb9d7f3693a9a")
+M1Mnemonic = os.Getenv("WalletSdkTestM1")
+*/
 )
 
 // func Test_BCSEncodeTransactionData(t *testing.T) {

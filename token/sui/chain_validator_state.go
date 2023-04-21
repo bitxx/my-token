@@ -20,7 +20,7 @@ type Validator struct {
 	ImageUrl        string          `json:"imageUrl"`
 	ProjectUrl      string          `json:"projectUrl"`
 	APY             float64         `json:"apy"`
-	Commission      int64           `json:"commission"`
+	Commission      decimal.Decimal `json:"commission"`
 	TotalStaked     decimal.Decimal `json:"totalStaked"`
 	DelegatedStaked string          `json:"delegatedStaked"`
 	SelfStaked      string          `json:"selfStaked"`
@@ -31,7 +31,7 @@ type Validator struct {
 type ValidatorState struct {
 	chain *Chain
 	// The current epoch in Sui. An epoch takes approximately 24 hours and runs in checkpoints.
-	Epoch int64 `json:"epoch"`
+	Epoch decimal.Decimal `json:"epoch"`
 	// Array of `Validator` elements
 	Validators []Validator `json:"validators"`
 
@@ -39,8 +39,8 @@ type ValidatorState struct {
 	TotalStaked decimal.Decimal `json:"totalStaked"`
 	// The amount of rewards won by all Sui validators in the last epoch.
 	TotalRewards          decimal.Decimal `json:"lastEpochReward"`
-	EpochStartTimestampMs int64           `json:"epochStartTimestampMs"`
-	EpochDurationMs       int64           `json:"epochDurationMs"`
+	EpochStartTimestampMs decimal.Decimal `json:"epochStartTimestampMs"`
+	EpochDurationMs       decimal.Decimal `json:"epochDurationMs"`
 }
 
 func NewValidatorState(chain *Chain) *ValidatorState {
@@ -133,8 +133,8 @@ func (vs *ValidatorState) GetValidator(address string, useCache bool) (v *Valida
 
 // EarningAmountTimeAfterTimestampMs 从当前周期的当前时间，到下一个周期结束，还剩多少时间
 // 可以使用：time.Now().UnixMilli()
-func (vs *ValidatorState) EarningAmountTimeAfterTimestampMs(timestamp int64) int64 {
-	ranTime := timestamp - vs.EpochStartTimestampMs
-	leftTime := vs.EpochDurationMs*2 - ranTime
+func (vs *ValidatorState) EarningAmountTimeAfterTimestampMs(timestamp int64) decimal.Decimal {
+	ranTime := decimal.NewFromInt(timestamp).Sub(vs.EpochStartTimestampMs)
+	leftTime := vs.EpochDurationMs.Mul(decimal.NewFromInt(2)).Sub(ranTime)
 	return leftTime
 }

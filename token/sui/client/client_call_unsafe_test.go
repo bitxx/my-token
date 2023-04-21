@@ -201,7 +201,7 @@ func simulateAndSendTxn(
 		require.True(t, simulate.Effects.IsSuccess())
 	}
 	if shouldExecute() {
-		signature, err := acc.SignSecureWithoutEncode(txn.TxBytes, sui_types.DefaultIntent())
+		signature, err := acc.Sign(txn.TxBytes, sui_types.DefaultIntent())
 		require.NoError(t, err)
 		options := types.SuiTransactionBlockResponseOptions{
 			ShowEffects: true,

@@ -29,16 +29,16 @@ func TestGetStakePools(t *testing.T) {
 
 func TestStakeEarningTimems(t *testing.T) {
 	validatorState := ValidatorState{
-		Epoch:                 9,
-		EpochDurationMs:       86400000,
-		EpochStartTimestampMs: 1680760906723,
+		Epoch:                 decimal.NewFromInt(9),
+		EpochDurationMs:       decimal.NewFromInt(86400000),
+		EpochStartTimestampMs: decimal.NewFromInt(1680760906723),
 	}
 
 	ti := validatorState.EarningAmountTimeAfterTimestampMs(time.Now().UnixMilli())
 	t.Log(ti)
 
 	stake := Stake{
-		RequestEpoch: 8,
+		RequestEpoch: decimal.NewFromInt(8),
 	}
 	stakePoolsService := NewStakePool(TestnetChain())
 	ti2 := stakePoolsService.EarningAmountTimeAfterTimestampMs(time.Now().UnixMilli(), stake, validatorState)
@@ -79,7 +79,7 @@ func TestWithdrawDelegation(t *testing.T) {
 	account := M1Account(t)
 	stakePoolsService := NewStakePool(TestnetChain())
 	//未签名交易
-	unsignTx, err := stakePoolsService.BuildUnSignWithdrawDelegationTx(account.Address, stakeId, types.SuiCoinType)
+	unsignTx, err := stakePoolsService.BuildUnSignWithdrawDelegationTx(account.Address, stakeId)
 	require.Nil(t, err)
 
 	//签名并提交交易

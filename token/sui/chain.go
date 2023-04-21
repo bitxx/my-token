@@ -3,45 +3,31 @@ package sui
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"mytoken/core/base"
 	"mytoken/token/sui/client"
-	"mytoken/token/sui/config"
 )
-
-var defaultChain = TestnetChain()
 
 type Chain struct {
 	rpcClient *client.Client
 	RpcUrl    string
+	ScanUrl   string
 }
 
-func NewChainWithRpcUrl(rpcUrl string) *Chain {
-	return &Chain{RpcUrl: rpcUrl}
+func NewChain(rpcUrl, scanUrl string) *Chain {
+	return &Chain{RpcUrl: rpcUrl, ScanUrl: scanUrl}
 }
 
 func (c *Chain) Client() (*client.Client, error) {
+	if c.RpcUrl == "" {
+		return nil, errors.New("rpcUrl is empty")
+	}
 	if c.rpcClient != nil {
 		return c.rpcClient, nil
 	}
 	var err error
 	c.rpcClient, err = client.Dial(c.RpcUrl)
 	return c.rpcClient, err
-}
-
-// DevnetChain
-//
-//	@Description: 开发网
-//	@return *Chain
-func DevnetChain() *Chain {
-	return NewChainWithRpcUrl(config.DevNetRpcUrl)
-}
-
-// TestnetChain
-//
-//	@Description: 测试网
-//	@return *Chain
-func TestnetChain() *Chain {
-	return NewChainWithRpcUrl(config.TestnetRpcUrl)
 }
 
 func (c *Chain) GetLatestSysState() (chainState json.RawMessage, err error) {

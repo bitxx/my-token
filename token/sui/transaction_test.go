@@ -4,10 +4,10 @@ import (
 	"testing"
 )
 
-const testHash = "8RXvmEj8oQB4S1zLA5wJ5V6DGMfm6w2UQD9tYWCXQyCu"
+const testHash = "CfnWfh8BeZwFyvUBhXjaN4QmBVmKzMGxRu4xABhrKasc"
 
 func TestTransactionDetail(t *testing.T) {
-	transaction := NewTransaction(DevnetChain())
+	transaction := NewTransaction(defaultChain)
 	resp, err := transaction.TransactionDetail(testHash)
 	if err != nil {
 		t.Fatal(err)

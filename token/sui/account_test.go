@@ -29,21 +29,24 @@ func M2Account(t *testing.T) *Account {
 }
 
 func TestAccountInfo(t *testing.T) {
-	account := M2Account(t)
+	testAccount := testcase.Accounts1
+	account := M1Account(t)
+	require.Equal(t, account.Address, testAccount.Sui.Address)
 	privateKey, _ := account.PrivateKeyHex()
 	t.Log("privateKey:", privateKey)
 	t.Log("publicKey:", account.PublicKeyHex())
 	t.Log("address:", account.Address)
 }
 
-func TestAccount(t *testing.T) {
-	testAccount := testcase.Accounts1
-	account := M1Account(t)
-	require.Equal(t, account.Address, testAccount.Sui.Address)
+func TestNewAccountWithPrivatekey(t *testing.T) {
+	scheme, err := types.NewSignatureScheme(types.SIGNATURE_SCHEME_FLAG_ED25519)
+	require.Nil(t, err)
 
-	t.Log(account.PrivateKeyHex())
-	t.Log(account.PublicKeyHex())
-	t.Log(account.Address)
+	account := M1Account(t)
+	privateKey, _ := account.PrivateKeyHex()
+	accountFromPrikey, err := NewAccountWithPrivateKey(scheme, privateKey)
+	require.Nil(t, err)
+	require.Equal(t, accountFromPrikey.Address, account.Address)
 }
 
 func TestNewAccountWithKeystore(t *testing.T) {
@@ -76,22 +79,6 @@ func TestPublicKeyToAddress(t *testing.T) {
 	addr, err := account.EncodePublicKeyToAddress(scheme, testAccount.Sui.PublicKey)
 	require.Nil(t, err)
 	require.Equal(t, addr, testAccount.Sui.Address)
-}
-
-func TestAccountWithPrivatekey(t *testing.T) {
-	scheme, err := types.NewSignatureScheme(types.SIGNATURE_SCHEME_FLAG_ED25519)
-	require.Nil(t, err)
-
-	mnemonic := testcase.M1
-	accountFromMnemonic, err := NewAccountWithMnemonic(scheme, mnemonic)
-	require.Nil(t, err)
-	privateKey, err := accountFromMnemonic.PrivateKeyHex()
-	require.Nil(t, err)
-
-	accountFromPrikey, err := NewAccountWithPrivateKey(scheme, privateKey)
-	require.Nil(t, err)
-
-	require.Equal(t, accountFromMnemonic.Address, accountFromPrikey.Address)
 }
 
 func TestEncodePublicKeyToAddress(t *testing.T) {

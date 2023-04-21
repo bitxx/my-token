@@ -11,7 +11,7 @@ const (
 type CoinStruct struct {
 	CoinType            string          `json:"coinType"`
 	CoinObjectId        ObjectId        `json:"coinObjectId"`
-	Version             uint64          `json:"version"`
+	Version             decimal.Decimal `json:"version"`
 	Digest              string          `json:"digest"`
 	Balance             decimal.Decimal `json:"balance"`
 	LockedUntilEpoch    *int            `json:"lockedUntilEpoch"`

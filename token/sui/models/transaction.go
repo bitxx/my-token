@@ -33,6 +33,6 @@ type Transaction struct {
 	message := blake2b.Sum256(signTx.Bytes())
 	signatureData := bytes.NewBuffer([]byte{byte(SignatureSchemeSerializedEd25519)})
 	signatureData.Write(ed25519.Sign(privateKey, message[:]))
-	signatureData.Write(privateKey.Public().(ed25519.PublicKey))
+	signatureData.Write(privateKey.Public().(ed25519.publicKey))
 	return &txn.TxBytes, []types.Base64Data{signatureData.Bytes()}
 }*/

@@ -6,9 +6,9 @@ import (
 )
 
 type SysState struct {
-	Epoch                                 int64             `json:"epoch"`
-	ProtocolVersion                       int64             `json:"protocolVersion"`
-	SystemStateVersion                    int64             `json:"systemStateVersion"`
+	Epoch                                 decimal.Decimal   `json:"epoch"`
+	ProtocolVersion                       decimal.Decimal   `json:"protocolVersion"`
+	SystemStateVersion                    decimal.Decimal   `json:"systemStateVersion"`
 	StorageFundTotalObjectStorageRebates  decimal.Decimal   `json:"storageFundTotalObjectStorageRebates"`
 	StorageFundNonRefundableBalance       decimal.Decimal   `json:"storageFundNonRefundableBalance"`
 	ReferenceGasPrice                     decimal.Decimal   `json:"referenceGasPrice"`
@@ -17,30 +17,30 @@ type SysState struct {
 	SafeModeComputationRewards            decimal.Decimal   `json:"safeModeComputationRewards"`
 	SafeModeStorageRebates                decimal.Decimal   `json:"safeModeStorageRebates"`
 	SafeModeNonRefundableStorageFee       decimal.Decimal   `json:"safeModeNonRefundableStorageFee"`
-	EpochStartTimestampMs                 int64             `json:"epochStartTimestampMs"`
-	EpochDurationMs                       int64             `json:"epochDurationMs"`
-	StakeSubsidyStartEpoch                int64             `json:"stakeSubsidyStartEpoch"`
-	MaxValidatorCount                     int64             `json:"maxValidatorCount"`
+	EpochStartTimestampMs                 decimal.Decimal   `json:"epochStartTimestampMs"`
+	EpochDurationMs                       decimal.Decimal   `json:"epochDurationMs"`
+	StakeSubsidyStartEpoch                decimal.Decimal   `json:"stakeSubsidyStartEpoch"`
+	MaxValidatorCount                     decimal.Decimal   `json:"maxValidatorCount"`
 	MinValidatorJoiningStake              decimal.Decimal   `json:"minValidatorJoiningStake"`
 	ValidatorLowStakeThreshold            decimal.Decimal   `json:"validatorLowStakeThreshold"`
 	ValidatorVeryLowStakeThreshold        decimal.Decimal   `json:"validatorVeryLowStakeThreshold"`
-	ValidatorLowStakeGracePeriod          int64             `json:"validatorLowStakeGracePeriod"`
+	ValidatorLowStakeGracePeriod          decimal.Decimal   `json:"validatorLowStakeGracePeriod"`
 	StakeSubsidyBalance                   decimal.Decimal   `json:"stakeSubsidyBalance"`
-	StakeSubsidyDistributionCounter       int64             `json:"stakeSubsidyDistributionCounter"`
+	StakeSubsidyDistributionCounter       decimal.Decimal   `json:"stakeSubsidyDistributionCounter"`
 	StakeSubsidyCurrentDistributionAmount decimal.Decimal   `json:"stakeSubsidyCurrentDistributionAmount"`
-	StakeSubsidyPeriodLength              int64             `json:"stakeSubsidyPeriodLength"`
+	StakeSubsidyPeriodLength              decimal.Decimal   `json:"stakeSubsidyPeriodLength"`
 	StakeSubsidyDecreaseRate              int64             `json:"stakeSubsidyDecreaseRate"`
 	TotalStake                            decimal.Decimal   `json:"totalStake"`
 	ActiveValidators                      []ActiveValidator `json:"activeValidators"`
 	PendingActiveValidatorsID             string            `json:"pendingActiveValidatorsId"`
-	PendingActiveValidatorsSize           int64             `json:"pendingActiveValidatorsSize"`
+	PendingActiveValidatorsSize           decimal.Decimal   `json:"pendingActiveValidatorsSize"`
 	PendingRemovals                       []interface{}     `json:"pendingRemovals"`
 	StakingPoolMappingsID                 string            `json:"stakingPoolMappingsId"`
-	StakingPoolMappingsSize               int64             `json:"stakingPoolMappingsSize"`
+	StakingPoolMappingsSize               decimal.Decimal   `json:"stakingPoolMappingsSize"`
 	InactivePoolsID                       string            `json:"inactivePoolsId"`
-	InactivePoolsSize                     int64             `json:"inactivePoolsSize"`
+	InactivePoolsSize                     decimal.Decimal   `json:"inactivePoolsSize"`
 	ValidatorCandidatesID                 string            `json:"validatorCandidatesId"`
-	ValidatorCandidatesSize               int64             `json:"validatorCandidatesSize"`
+	ValidatorCandidatesSize               decimal.Decimal   `json:"validatorCandidatesSize"`
 	AtRiskValidators                      [][]interface{}   `json:"atRiskValidators"`
 	ValidatorReportRecords                [][]interface{}   `json:"validatorReportRecords"`
 }
@@ -67,15 +67,15 @@ type ActiveValidator struct {
 	NextEpochP2PAddress          interface{}     `json:"nextEpochP2pAddress"`
 	NextEpochPrimaryAddress      interface{}     `json:"nextEpochPrimaryAddress"`
 	NextEpochWorkerAddress       interface{}     `json:"nextEpochWorkerAddress"`
-	VotingPower                  int64           `json:"votingPower"`
+	VotingPower                  decimal.Decimal `json:"votingPower"`
 	OperationCapID               string          `json:"operationCapId"`
 	GasPrice                     decimal.Decimal `json:"gasPrice"`
-	CommissionRate               int64           `json:"commissionRate"`
+	CommissionRate               decimal.Decimal `json:"commissionRate"`
 	NextEpochStake               decimal.Decimal `json:"nextEpochStake"`
 	NextEpochGasPrice            decimal.Decimal `json:"nextEpochGasPrice"`
-	NextEpochCommissionRate      int64           `json:"nextEpochCommissionRate"`
+	NextEpochCommissionRate      decimal.Decimal `json:"nextEpochCommissionRate"`
 	StakingPoolID                string          `json:"stakingPoolId"`
-	StakingPoolActivationEpoch   int64           `json:"stakingPoolActivationEpoch"`
+	StakingPoolActivationEpoch   decimal.Decimal `json:"stakingPoolActivationEpoch"`
 	StakingPoolDeactivationEpoch interface{}     `json:"stakingPoolDeactivationEpoch"`
 	StakingPoolSuiBalance        decimal.Decimal `json:"stakingPoolSuiBalance"`
 	RewardsPool                  decimal.Decimal `json:"rewardsPool"`
@@ -84,10 +84,10 @@ type ActiveValidator struct {
 	PendingTotalSuiWithdraw      decimal.Decimal `json:"pendingTotalSuiWithdraw"`
 	PendingPoolTokenWithdraw     decimal.Decimal `json:"pendingPoolTokenWithdraw"`
 	ExchangeRatesID              string          `json:"exchangeRatesId"`
-	ExchangeRatesSize            int64           `json:"exchangeRatesSize"`
+	ExchangeRatesSize            decimal.Decimal `json:"exchangeRatesSize"`
 }
 
-func (av *ActiveValidator) CalculateAPY(epoch int64) float64 {
+func (av *ActiveValidator) CalculateAPY(epoch decimal.Decimal) float64 {
 	var (
 		stakingPoolSuiBalance      = av.StakingPoolSuiBalance
 		stakingPoolActivationEpoch = av.StakingPoolActivationEpoch
@@ -95,10 +95,10 @@ func (av *ActiveValidator) CalculateAPY(epoch int64) float64 {
 	)
 
 	// If the staking pool is active then we calculate its APY. Or if staking started in epoch 0
-	if stakingPoolActivationEpoch == 0 {
-		numEpochsParticipated := epoch - stakingPoolActivationEpoch
+	if stakingPoolActivationEpoch.Cmp(decimal.Zero) == 0 {
+		numEpochsParticipated := epoch.Sub(stakingPoolActivationEpoch)
 		pow1, _ := stakingPoolSuiBalance.Sub(poolTokenBalance).Div(poolTokenBalance).Add(decimal.NewFromInt(1)).Float64()
-		pow2, _ := decimal.NewFromInt(365).Div(decimal.NewFromInt(int64(numEpochsParticipated))).Float64()
+		pow2, _ := decimal.NewFromInt(365).Div(numEpochsParticipated).Float64()
 		apy := (math.Pow(pow1, pow2) - 1) * 100
 		if apy > 100000 {
 			return 0

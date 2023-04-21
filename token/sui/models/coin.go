@@ -9,7 +9,7 @@ type Coin struct {
 	Data []struct {
 		CoinType            string          `json:"coinType"`
 		CoinObjectID        types.ObjectId  `json:"coinObjectId"`
-		Version             uint64          `json:"version"`
+		Version             decimal.Decimal `json:"version"`
 		Digest              string          `json:"digest"`
 		Balance             decimal.Decimal `json:"balance"`
 		LockedUntilEpoch    interface{}     `json:"lockedUntilEpoch"`
